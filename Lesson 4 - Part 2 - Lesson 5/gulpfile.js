@@ -9,6 +9,7 @@ var jasmine = require('gulp-jasmine-phantom');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var babel = require('gulp-babel');
+var sourcemaps = require('gulp-sourcemaps');
 
 gulp.task('default', ['copy-html', 'copy-images', 'styles', 'lint', 'scripts'], function() {
 	gulp.watch('sass/**/*.scss', ['styles']);
@@ -38,9 +39,11 @@ gulp.task('scripts', function() {
 
 gulp.task('scripts-dist', function() {
 	gulp.src('js/**/*.js')
+		.pipe(sourcemaps.init())
 		.pipe(babel())
 		.pipe(concat('all.js'))
 		.pipe(uglify())
+		.pipe(sourcemaps.write())
 		.pipe(gulp.dest('dist/js'));
 });
 
@@ -56,12 +59,14 @@ gulp.task('copy-images', function() {
 
 gulp.task('styles', function() {
 	gulp.src('sass/**/*.scss')
+		.pipe(sourcemaps.init())
 		.pipe(sass({
 			outputStyle: 'compressed'
 		}).on('error', sass.logError))
 		.pipe(autoprefixer({
 			browsers: ['last 2 versions']
 		}))
+		.pipe(sourcemaps.write())
 		.pipe(gulp.dest('dist/css'))
 		.pipe(browserSync.stream());
 });
